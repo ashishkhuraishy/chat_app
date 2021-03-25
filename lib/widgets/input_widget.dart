@@ -20,37 +20,47 @@ class InputWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: Container(
-            decoration: BoxDecoration(
-              border: Border(top: BorderSide(width: 0.5)),
-              color: Colors.white,
-            ),
-            child: Row(
-              children: <Widget>[
-                EmojiKeyboardSwitch(
-                  isEmojiVisible: isEmojiVisible,
-                  focusNode: focusNode,
-                  isKeyboardVisible: isKeyboardVisible,
-                  onBlurred: onBlurred,
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      child: Row(
+        children: [
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(25),
+                border: Border.all(
+                  color: Colors.black87,
+                  width: 0.2,
                 ),
-                Expanded(
-                  child: MessageTextField(
+              ),
+              child: Row(
+                children: <Widget>[
+                  EmojiKeyboardSwitch(
+                    isEmojiVisible: isEmojiVisible,
                     focusNode: focusNode,
-                    controller: controller,
+                    isKeyboardVisible: isKeyboardVisible,
+                    onBlurred: onBlurred,
                   ),
-                ),
-              ],
+                  Expanded(
+                    child: MessageTextField(
+                      focusNode: focusNode,
+                      controller: controller,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
-        SendButton(
-          controller: controller,
-          onSentMessage: onSentMessage,
-        ),
-      ],
+          SizedBox(
+            width: 4,
+          ),
+          SendButton(
+            controller: controller,
+            onSentMessage: onSentMessage,
+          ),
+        ],
+      ),
     );
   }
 }
@@ -72,7 +82,6 @@ class EmojiKeyboardSwitch extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 4),
       child: IconButton(
         icon: Icon(
           isEmojiVisible
@@ -107,15 +116,18 @@ class MessageTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
-      focusNode: focusNode,
-      controller: controller,
-      maxLines: 10,
-      minLines: 1,
-      style: TextStyle(fontSize: 16),
-      decoration: InputDecoration.collapsed(
-        hintText: 'Type your message...',
-        hintStyle: TextStyle(color: Colors.grey),
+    return Container(
+      padding: EdgeInsets.all(10),
+      child: TextField(
+        focusNode: focusNode,
+        controller: controller,
+        maxLines: 10,
+        minLines: 1,
+        style: TextStyle(fontSize: 16),
+        decoration: InputDecoration.collapsed(
+          hintText: 'Type your message...',
+          hintStyle: TextStyle(color: Colors.grey),
+        ),
       ),
     );
   }
@@ -135,8 +147,15 @@ class SendButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 4),
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: Colors.green[900],
+      ),
       child: IconButton(
-        icon: Icon(Icons.send),
+        icon: Icon(
+          Icons.mic_outlined,
+          color: Colors.white,
+        ),
         onPressed: () {
           if (controller.text.trim().isEmpty) {
             return;

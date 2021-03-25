@@ -1,15 +1,14 @@
+import 'package:chat_app/models/message.dart';
 import 'package:flutter/material.dart';
 
 enum MessageType { Text, Audio, Video, Image }
 
 class MessageWidget extends StatelessWidget {
-  final String message;
-  final MessageType messageType;
+  final Message message;
   final bool ownMessage;
 
   const MessageWidget({
     @required this.message,
-    @required this.messageType,
     @required this.ownMessage,
   });
 
@@ -41,14 +40,40 @@ class MessageWidget extends StatelessWidget {
             padding: EdgeInsets.all(12),
             margin: EdgeInsets.all(12),
             decoration: decoration,
-            child: Text(
-              message,
-              style: TextStyle(color: Colors.black),
-              textAlign: TextAlign.start,
+            child: MessageItem(
+              message: message,
             ),
           ),
         ),
       ],
     );
+  }
+}
+
+class MessageItem extends StatelessWidget {
+  final Message message;
+
+  const MessageItem({
+    Key key,
+    this.message,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    switch (message.messageType) {
+      case MessageType.Text:
+        return Text(
+          message.messageText,
+          style: TextStyle(color: Colors.black),
+          textAlign: TextAlign.start,
+        );
+        break;
+      default:
+        return Text(
+          message.messageText,
+          style: TextStyle(color: Colors.black),
+          textAlign: TextAlign.start,
+        );
+    }
   }
 }

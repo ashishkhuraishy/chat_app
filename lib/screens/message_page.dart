@@ -1,3 +1,4 @@
+import 'package:chat_app/models/message.dart';
 import 'package:chat_app/widgets/emoji_picker.dart';
 import 'package:chat_app/widgets/input_widget.dart';
 import 'package:chat_app/widgets/message_widget.dart';
@@ -10,8 +11,10 @@ class MessagePage extends StatefulWidget {
 }
 
 class _MessagePageState extends State<MessagePage> {
-  final messages = <String>[];
+  final messages = <Message>[];
   final controller = TextEditingController();
+  final KeyboardVisibilityController _keyboardVisibilityController =
+      KeyboardVisibilityController();
   bool isEmojiVisible = false;
   bool isKeyboardVisible = false;
 
@@ -19,7 +22,7 @@ class _MessagePageState extends State<MessagePage> {
   void initState() {
     super.initState();
 
-    KeyboardVisibility.onChange.listen((bool isKeyboardVisible) {
+    _keyboardVisibilityController.onChange.listen((bool isKeyboardVisible) {
       setState(() {
         this.isKeyboardVisible = isKeyboardVisible;
       });
@@ -49,7 +52,6 @@ class _MessagePageState extends State<MessagePage> {
                       .map((message) => MessageWidget(
                             message: message,
                             ownMessage: true,
-                            messageType: MessageType.Text,
                           ))
                       .toList(),
                 ),
@@ -60,7 +62,7 @@ class _MessagePageState extends State<MessagePage> {
                 isEmojiVisible: isEmojiVisible,
                 isKeyboardVisible: isKeyboardVisible,
                 onSentMessage: (message) => setState(
-                  () => messages.insert(0, message),
+                  () => messages.insert(0, Message.textMessage(message)),
                 ),
               ),
               Offstage(
