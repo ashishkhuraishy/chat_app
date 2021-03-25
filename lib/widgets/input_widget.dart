@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class InputWidget extends StatelessWidget {
+class InputWidget extends StatefulWidget {
   final TextEditingController controller;
   final bool isEmojiVisible;
   final bool isKeyboardVisible;
   final Function onBlurred;
   final ValueChanged<String> onSentMessage;
-  final focusNode = FocusNode();
 
   InputWidget({
     @required this.controller,
@@ -17,6 +16,16 @@ class InputWidget extends StatelessWidget {
     @required this.onBlurred,
     Key key,
   }) : super(key: key);
+
+  @override
+  _InputWidgetState createState() => _InputWidgetState();
+}
+
+class _InputWidgetState extends State<InputWidget> {
+  final focusNode = FocusNode();
+  final TextEditingController _controller = TextEditingController();
+
+  bool _isEmpty = true;
 
   @override
   Widget build(BuildContext context) {
@@ -37,17 +46,25 @@ class InputWidget extends StatelessWidget {
               child: Row(
                 children: <Widget>[
                   EmojiKeyboardSwitch(
-                    isEmojiVisible: isEmojiVisible,
+                    isEmojiVisible: widget.isEmojiVisible,
                     focusNode: focusNode,
-                    isKeyboardVisible: isKeyboardVisible,
-                    onBlurred: onBlurred,
+                    isKeyboardVisible: widget.isKeyboardVisible,
+                    onBlurred: widget.onBlurred,
                   ),
                   Expanded(
                     child: MessageTextField(
                       focusNode: focusNode,
-                      controller: controller,
+                      controller: _controller,
+                      onChanged: (value) {
+                        if (value.isEmpty != _isEmpty) {
+                          setState(() {
+                            _isEmpty = value.isEmpty;
+                          });
+                        }
+                      },
                     ),
                   ),
+                  _isEmpty ? FileInputWidget() : SizedBox.shrink(),
                 ],
               ),
             ),
@@ -56,11 +73,33 @@ class InputWidget extends StatelessWidget {
             width: 4,
           ),
           SendButton(
-            controller: controller,
-            onSentMessage: onSentMessage,
+            controller: widget.controller,
+            onSentMessage: widget.onSentMessage,
           ),
         ],
       ),
+    );
+  }
+}
+
+class FileInputWidget extends StatelessWidget {
+  const FileInputWidget({
+    Key key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        IconButton(
+          icon: Icon(Icons.camera_alt),
+          onPressed: () => print('Clicked camera'),
+        ),
+        // IconButton(
+        //   icon: Icon(Icons.camera_alt),
+        //   onPressed: () => print('Clicked camera'),
+        // ),
+      ],
     );
   }
 }
@@ -109,10 +148,12 @@ class MessageTextField extends StatelessWidget {
     Key key,
     @required this.focusNode,
     @required this.controller,
+    this.onChanged,
   }) : super(key: key);
 
   final FocusNode focusNode;
   final TextEditingController controller;
+  final Function(String value) onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -123,10 +164,11 @@ class MessageTextField extends StatelessWidget {
         controller: controller,
         maxLines: 10,
         minLines: 1,
+        onChanged: (value) => onChanged(value),
         style: TextStyle(fontSize: 16),
         decoration: InputDecoration.collapsed(
           hintText: 'Type your message...',
-          hintStyle: TextStyle(color: Colors.grey),
+          hintStyle: TextStyle(color: Colors.grey, fontSize: 12),
         ),
       ),
     );
