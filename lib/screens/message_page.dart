@@ -1,6 +1,6 @@
-import 'package:chat_app/providers/message_provider.dart';
-import 'package:chat_app/widgets/input_widget.dart';
-import 'package:chat_app/widgets/message_widget.dart';
+import '../providers/message_provider.dart';
+import '../widgets/input_widget.dart';
+import '../widgets/message_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

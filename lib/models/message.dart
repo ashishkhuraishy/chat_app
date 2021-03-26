@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:chat_app/widgets/message_widget.dart';
+import '../widgets/message_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
 

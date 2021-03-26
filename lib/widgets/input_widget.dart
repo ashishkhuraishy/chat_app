@@ -1,8 +1,8 @@
-import 'package:chat_app/models/message.dart';
-import 'package:chat_app/providers/message_provider.dart';
-import 'package:chat_app/widgets/emoji_picker.dart';
-import 'package:chat_app/widgets/emoji_text_switch.dart';
-import 'package:chat_app/widgets/send_button.dart';
+import '../models/message.dart';
+import '../providers/message_provider.dart';
+import 'emoji_picker.dart';
+import 'emoji_text_switch.dart';
+import 'send_button.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';

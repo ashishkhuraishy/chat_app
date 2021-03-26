@@ -1,5 +1,5 @@
-import 'package:chat_app/providers/message_provider.dart';
-import 'package:chat_app/screens/message_page.dart';
+import 'providers/message_provider.dart';
+import 'screens/message_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
