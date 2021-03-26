@@ -13,6 +13,7 @@ class EmojiPickerWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return EmojiPicker(
       rows: 4,
+      numRecommended: 6,
       onEmojiSelected: (emoji, category) => onEmojiSelected(emoji.emoji),
     );
   }

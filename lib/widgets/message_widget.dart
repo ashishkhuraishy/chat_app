@@ -68,6 +68,8 @@ class MessageItem extends StatelessWidget {
           textAlign: TextAlign.start,
         );
         break;
+      case MessageType.Image:
+        return Image.file(message.imgFile);
       default:
         return Text(
           message.messageText,

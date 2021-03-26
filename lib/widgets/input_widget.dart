@@ -1,19 +1,14 @@
+import 'package:chat_app/models/message.dart';
+import 'package:chat_app/providers/message_provider.dart';
+import 'package:chat_app/widgets/emoji_picker.dart';
+import 'package:chat_app/widgets/emoji_text_switch.dart';
+import 'package:chat_app/widgets/send_button.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 
 class InputWidget extends StatefulWidget {
-  final TextEditingController controller;
-  final bool isEmojiVisible;
-  final bool isKeyboardVisible;
-  final Function onBlurred;
-  final ValueChanged<String> onSentMessage;
-
   InputWidget({
-    @required this.controller,
-    @required this.isEmojiVisible,
-    @required this.isKeyboardVisible,
-    @required this.onSentMessage,
-    @required this.onBlurred,
     Key key,
   }) : super(key: key);
 
@@ -22,124 +17,100 @@ class InputWidget extends StatefulWidget {
 }
 
 class _InputWidgetState extends State<InputWidget> {
-  final focusNode = FocusNode();
-  final TextEditingController _controller = TextEditingController();
+  FocusNode focusNode = FocusNode();
+  TextEditingController _controller;
 
   bool _isEmpty = true;
 
   @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController();
+  }
+
+  _onSubmit() {
+    if (_controller.text.trim().isEmpty) {
+      return;
+    }
+
+    Provider.of<MessageProvider>(context, listen: false)
+        .addMessage(Message.textMessage(_controller.text));
+
+    setState(() => _isEmpty = true);
+    _controller.clear();
+  }
+
+  void onEmojiSelected(String emoji) {
+    setState(() {
+      _controller.text += emoji;
+    });
+  }
+
+  void _onValueChange(String value) {
+    if (value.isEmpty != _isEmpty) {
+      setState(() {
+        _isEmpty = value.isEmpty;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      child: Row(
-        children: [
-          Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(25),
-                border: Border.all(
-                  color: Colors.black87,
-                  width: 0.2,
-                ),
-              ),
-              child: Row(
-                children: <Widget>[
-                  EmojiKeyboardSwitch(
-                    isEmojiVisible: widget.isEmojiVisible,
-                    focusNode: focusNode,
-                    isKeyboardVisible: widget.isKeyboardVisible,
-                    onBlurred: widget.onBlurred,
-                  ),
-                  Expanded(
-                    child: MessageTextField(
-                      focusNode: focusNode,
-                      controller: _controller,
-                      onChanged: (value) {
-                        if (value.isEmpty != _isEmpty) {
-                          setState(() {
-                            _isEmpty = value.isEmpty;
-                          });
-                        }
-                      },
+    return Column(
+      children: [
+        Container(
+          margin: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          child: Row(
+            children: [
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(25),
+                    border: Border.all(
+                      color: Colors.black87,
+                      width: 0.2,
                     ),
                   ),
-                  _isEmpty ? FileInputWidget() : SizedBox.shrink(),
-                ],
+                  child: Row(
+                    children: <Widget>[
+                      EmojiTextSwitch(
+                        focusNode: focusNode,
+                        // onClick: _onEmojiClick,
+                      ),
+                      Expanded(
+                        child: MessageTextField(
+                          focusNode: focusNode,
+                          controller: _controller,
+                          onChanged: _onValueChange,
+                        ),
+                      ),
+                      _isEmpty ? FileInputWidget() : SizedBox.shrink(),
+                    ],
+                  ),
+                ),
               ),
-            ),
+              SizedBox(
+                width: 4,
+              ),
+              SendButton(
+                onSubmit: _onSubmit,
+              ),
+            ],
           ),
-          SizedBox(
-            width: 4,
-          ),
-          SendButton(
-            controller: widget.controller,
-            onSentMessage: widget.onSentMessage,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class FileInputWidget extends StatelessWidget {
-  const FileInputWidget({
-    Key key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        IconButton(
-          icon: Icon(Icons.camera_alt),
-          onPressed: () => print('Clicked camera'),
         ),
-        // IconButton(
-        //   icon: Icon(Icons.camera_alt),
-        //   onPressed: () => print('Clicked camera'),
-        // ),
+        Consumer<ValueNotifier<bool>>(
+          builder: (context, notifier, child) {
+            return Offstage(
+              child: EmojiPickerWidget(
+                onEmojiSelected: onEmojiSelected,
+              ),
+              offstage: !notifier.value,
+            );
+          },
+        ),
       ],
     );
-  }
-}
-
-class EmojiKeyboardSwitch extends StatelessWidget {
-  const EmojiKeyboardSwitch({
-    Key key,
-    @required this.isEmojiVisible,
-    @required this.focusNode,
-    @required this.isKeyboardVisible,
-    @required this.onBlurred,
-  }) : super(key: key);
-
-  final bool isEmojiVisible;
-  final FocusNode focusNode;
-  final bool isKeyboardVisible;
-  final Function onBlurred;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      child: IconButton(
-        icon: Icon(
-          isEmojiVisible
-              ? Icons.keyboard_rounded
-              : Icons.emoji_emotions_outlined,
-        ),
-        onPressed: onClickEmoji,
-      ),
-    );
-  }
-
-  void onClickEmoji() async {
-    if (isEmojiVisible) {
-      focusNode.requestFocus();
-    } else if (isKeyboardVisible) {
-      await SystemChannels.textInput.invokeMethod('TextInput.hide');
-      await Future.delayed(Duration(milliseconds: 100));
-    }
-    onBlurred();
   }
 }
 
@@ -162,8 +133,8 @@ class MessageTextField extends StatelessWidget {
       child: TextField(
         focusNode: focusNode,
         controller: controller,
-        maxLines: 10,
         minLines: 1,
+        maxLines: null,
         onChanged: (value) => onChanged(value),
         style: TextStyle(fontSize: 16),
         decoration: InputDecoration.collapsed(
@@ -175,38 +146,32 @@ class MessageTextField extends StatelessWidget {
   }
 }
 
-class SendButton extends StatelessWidget {
-  const SendButton({
+class FileInputWidget extends StatelessWidget {
+  FileInputWidget({
     Key key,
-    @required this.controller,
-    @required this.onSentMessage,
   }) : super(key: key);
 
-  final TextEditingController controller;
-  final ValueChanged<String> onSentMessage;
+  final ImagePicker _picker = ImagePicker();
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 4),
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: Colors.green[900],
-      ),
-      child: IconButton(
-        icon: Icon(
-          Icons.mic_outlined,
-          color: Colors.white,
-        ),
-        onPressed: () {
-          if (controller.text.trim().isEmpty) {
-            return;
-          }
+    return Row(
+      children: [
+        IconButton(
+            icon: Icon(Icons.camera_alt),
+            onPressed: () async {
+              PickedFile img =
+                  await _picker.getImage(source: ImageSource.gallery);
+              print(img.path);
 
-          onSentMessage(controller.text);
-          controller.clear();
-        },
-      ),
+              Provider.of<MessageProvider>(context, listen: false)
+                  .addMessage(Message.imageMessage(img));
+            }),
+        // IconButton(
+        //   icon: Icon(Icons.camera_alt),
+        //   onPressed: () => print('Clicked camera'),
+        // ),
+      ],
     );
   }
 }
