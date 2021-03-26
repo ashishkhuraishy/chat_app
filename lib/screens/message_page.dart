@@ -1,8 +1,9 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
 import '../providers/message_provider.dart';
 import '../widgets/input_widget.dart';
 import '../widgets/message_widget.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class MessagePage extends StatelessWidget {
   final ValueNotifier<bool> _isEmojiVisible = ValueNotifier<bool>(false);

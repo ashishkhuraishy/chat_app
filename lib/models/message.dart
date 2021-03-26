@@ -1,8 +1,9 @@
 import 'dart:io';
 
-import '../widgets/message_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
+
+import '../widgets/message_widget.dart';
 
 class Message {
   final int id;

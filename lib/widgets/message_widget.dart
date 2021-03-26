@@ -1,5 +1,6 @@
-import '../models/message.dart';
 import 'package:flutter/material.dart';
+
+import '../models/message.dart';
 
 enum MessageType { Text, Audio, Video, Image }
 

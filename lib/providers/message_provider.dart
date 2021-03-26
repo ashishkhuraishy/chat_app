@@ -1,5 +1,6 @@
-import '../models/message.dart';
 import 'package:flutter/cupertino.dart';
+
+import '../models/message.dart';
 
 class MessageProvider extends ChangeNotifier {
   List<Message> _messages = <Message>[];
