@@ -30,12 +30,11 @@ class _InputWidgetState extends State<InputWidget> {
   }
 
   _onSubmit() {
-    if (_controller.text.trim().isEmpty) {
-      return;
+    var text = _controller.text.trim();
+    if (text.isNotEmpty) {
+      Provider.of<MessageProvider>(context, listen: false)
+          .addMessage(Message.textMessage(text));
     }
-
-    Provider.of<MessageProvider>(context, listen: false)
-        .addMessage(Message.textMessage(_controller.text));
 
     setState(() => _isEmpty = true);
     _controller.clear();
