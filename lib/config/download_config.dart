@@ -1,28 +1,32 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
 import 'dart:isolate';
 import 'dart:ui';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
 
 enum FileType { image, audio, video }
 // Constant declared to keep track of the current download info
 const String DOWNLOAD_NOTIFIER_PORT = 'DOWNLOAD_NOTIFIER_PORT';
 
-class DownloadConfig {
-  Map<String, String> _urlWithIDMap = {};
-  Map<String, StreamController<DownloadTask>> _idWithControllerMap = {};
+class DownloadConfig extends ChangeNotifier {
+  final Map<String, String> _urlWithIDMap = {};
+  final Map<String, StreamController<DownloadTask>> _idWithControllerMap = {};
 
-  ReceivePort _port = ReceivePort();
+  final ReceivePort _port = ReceivePort();
 
   DownloadConfig() {
     _registerDownload();
   }
 
-  void addTask(String url, String fileType) async {
+  Future<StreamController<DownloadTask>> addTask(
+      String url, String fileType) async {
     var downloadDir = await _generateDownloadDir(fileType);
-    if (downloadDir.isEmpty) return;
+    if (downloadDir.isEmpty) return null;
 
     final taskID = await FlutterDownloader.enqueue(
       url: url,
@@ -33,6 +37,13 @@ class DownloadConfig {
 
     _urlWithIDMap[url] = taskID;
     _idWithControllerMap[taskID] = StreamController<DownloadTask>();
+
+    return _idWithControllerMap[taskID];
+  }
+
+  void dispose() {
+    IsolateNameServer.removePortNameMapping(DOWNLOAD_NOTIFIER_PORT);
+    _port.close();
   }
 
   // This method will initialise and create a port for main isolate
@@ -52,6 +63,7 @@ class DownloadConfig {
 
       var taskInfo =
           DownloadTask(taskId: id, status: status, progress: downloadrogress);
+      print(taskInfo.toString());
 
       _idWithControllerMap[id].add(taskInfo);
     });
@@ -61,7 +73,8 @@ class DownloadConfig {
 
   // Download call back will invoke a callback to the send port which will
   // add data to the respective stream of each download task
-  void _downloadCallback(String id, DownloadTaskStatus status, int progress) {
+  static void _downloadCallback(
+      String id, DownloadTaskStatus status, int progress) {
     final SendPort send =
         IsolateNameServer.lookupPortByName(DOWNLOAD_NOTIFIER_PORT);
     send.send([id, status, progress]);
@@ -75,6 +88,8 @@ class DownloadConfig {
     // we dont have a valid path to store the downloaded file
     bool hasPermission = await _checkStoragePermission();
     if (!hasPermission) return "";
+
+    log(hasPermission.toString());
 
     // TODO: change this to the app name
     String appName = "ChatApp";
@@ -92,6 +107,7 @@ class DownloadConfig {
     var permission = Permission.storage;
     var status = await permission.status;
 
+    log(status.toString());
     if (status.isGranted) return true;
 
     if (status.isPermanentlyDenied) {

@@ -1,3 +1,5 @@
+import 'package:chat_app/config/download_config.dart';
+import 'package:chat_app/screens/download_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:provider/provider.dart';
@@ -14,14 +16,22 @@ void main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => MessageProvider(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => MessageProvider()),
+        Provider<DownloadConfig>(
+          create: (context) => DownloadConfig(),
+          dispose: (context, value) {
+            value.dispose();
+          },
+        ),
+      ],
       child: MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: MessagePage(),
+        home: DownloadPage(),
       ),
     );
   }
