@@ -13,7 +13,7 @@ enum FileType { image, audio, video }
 // Constant declared to keep track of the current download info
 const String DOWNLOAD_NOTIFIER_PORT = 'DOWNLOAD_NOTIFIER_PORT';
 
-class DownloadConfig extends ChangeNotifier {
+class DownloadConfig {
   final Map<String, String> _urlWithIDMap = {};
   final Map<String, StreamController<DownloadTask>> _idWithControllerMap = {};
 

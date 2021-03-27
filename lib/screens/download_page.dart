@@ -17,19 +17,10 @@ class _DownloadPageState extends State<DownloadPage> {
 
   StreamController<DownloadTask> _controller;
 
-  DownloadConfig _downloadConfig;
-
   @override
   void initState() {
     super.initState();
     _controller = StreamController();
-    _downloadConfig = DownloadConfig();
-  }
-
-  @override
-  void dispose() {
-    _downloadConfig.dispose();
-    super.dispose();
   }
 
   @override
@@ -45,7 +36,8 @@ class _DownloadPageState extends State<DownloadPage> {
           ElevatedButton(
             onPressed: () async {
               var _controller =
-                  await _downloadConfig.addTask(videoUrl, 'video');
+                  await Provider.of<DownloadConfig>(context, listen: false)
+                      .addTask(videoUrl, 'video');
 
               setState(() {
                 this._controller = _controller;
