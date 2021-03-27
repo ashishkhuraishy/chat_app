@@ -34,6 +34,9 @@ dependencies:
   
   #image picker
   image_picker: ^0.7.3
+
+  #audio player
+  audioplayers: ^0.18.1
   
   provider:
 
