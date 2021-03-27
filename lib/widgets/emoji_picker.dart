@@ -1,5 +1,6 @@
 import 'package:emoji_picker/emoji_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class EmojiPickerWidget extends StatelessWidget {
   final ValueChanged<String> onEmojiSelected;
@@ -11,10 +12,17 @@ class EmojiPickerWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return EmojiPicker(
-      rows: 4,
-      numRecommended: 6,
-      onEmojiSelected: (emoji, category) => onEmojiSelected(emoji.emoji),
+    return Consumer<ValueNotifier<bool>>(
+      builder: (context, notifier, child) {
+        return Offstage(
+          child: EmojiPicker(
+            rows: 4,
+            numRecommended: 6,
+            onEmojiSelected: (emoji, category) => onEmojiSelected(emoji.emoji),
+          ),
+          offstage: !notifier.value,
+        );
+      },
     );
   }
 }
