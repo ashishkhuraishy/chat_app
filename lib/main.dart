@@ -1,3 +1,4 @@
+import 'package:chat_app/widgets/audio_player.dart';
 import 'package:chat_app/config/download_config.dart';
 import 'package:chat_app/screens/download_page.dart';
 import 'package:flutter/material.dart';
@@ -31,6 +32,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
+
         home: DownloadPage(),
       ),
     );
