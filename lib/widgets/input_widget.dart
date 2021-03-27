@@ -18,7 +18,7 @@ class InputWidget extends StatefulWidget {
 }
 
 class _InputWidgetState extends State<InputWidget> {
-  FocusNode focusNode = FocusNode();
+  FocusNode _focusNode;
   TextEditingController _controller;
 
   bool _isEmpty = true;
@@ -27,31 +27,34 @@ class _InputWidgetState extends State<InputWidget> {
   void initState() {
     super.initState();
     _controller = TextEditingController();
+    _focusNode = FocusNode();
   }
 
-  _onSubmit() {
-    if (_controller.text.trim().isEmpty) {
-      return;
-    }
+  @override
+  void dispose() {
+    _controller.dispose();
+    _focusNode.dispose();
+    super.dispose();
+  }
 
-    Provider.of<MessageProvider>(context, listen: false)
-        .addMessage(Message.textMessage(_controller.text));
+  void _onSubmit() {
+    var text = _controller.text.trim();
+    if (text.isNotEmpty) {
+      Provider.of<MessageProvider>(context, listen: false)
+          .addMessage(Message.textMessage(text));
+    }
 
     setState(() => _isEmpty = true);
     _controller.clear();
   }
 
-  void onEmojiSelected(String emoji) {
-    setState(() {
-      _controller.text += emoji;
-    });
+  void _onEmojiSelected(String emoji) {
+    setState(() => _controller.text += emoji);
   }
 
   void _onValueChange(String value) {
     if (value.isEmpty != _isEmpty) {
-      setState(() {
-        _isEmpty = value.isEmpty;
-      });
+      setState(() => _isEmpty = value.isEmpty);
     }
   }
 
@@ -76,17 +79,20 @@ class _InputWidgetState extends State<InputWidget> {
                   child: Row(
                     children: <Widget>[
                       EmojiTextSwitch(
-                        focusNode: focusNode,
+                        focusNode: _focusNode,
                         // onClick: _onEmojiClick,
                       ),
                       Expanded(
                         child: MessageTextField(
-                          focusNode: focusNode,
+                          focusNode: _focusNode,
                           controller: _controller,
                           onChanged: _onValueChange,
                         ),
                       ),
-                      _isEmpty ? FileInputWidget() : SizedBox.shrink(),
+                      Visibility(
+                        child: FileInputWidget(),
+                        visible: _isEmpty,
+                      )
                     ],
                   ),
                 ),
@@ -100,15 +106,8 @@ class _InputWidgetState extends State<InputWidget> {
             ],
           ),
         ),
-        Consumer<ValueNotifier<bool>>(
-          builder: (context, notifier, child) {
-            return Offstage(
-              child: EmojiPickerWidget(
-                onEmojiSelected: onEmojiSelected,
-              ),
-              offstage: !notifier.value,
-            );
-          },
+        EmojiPickerWidget(
+          onEmojiSelected: _onEmojiSelected,
         ),
       ],
     );

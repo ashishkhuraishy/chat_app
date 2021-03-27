@@ -1,3 +1,4 @@
+import 'package:chat_app/screens/preview_page.dart';
 import 'package:flutter/material.dart';
 
 import '../models/message.dart';
@@ -38,8 +39,8 @@ class MessageWidget extends StatelessWidget {
             maxWidth: MediaQuery.of(context).size.width / 1.3,
           ),
           child: Container(
-            padding: EdgeInsets.all(12),
-            margin: EdgeInsets.all(12),
+            padding: EdgeInsets.all(2),
+            margin: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
             decoration: decoration,
             child: MessageItem(
               message: message,
@@ -63,14 +64,17 @@ class MessageItem extends StatelessWidget {
   Widget build(BuildContext context) {
     switch (message.messageType) {
       case MessageType.Text:
-        return Text(
-          message.messageText,
-          style: TextStyle(color: Colors.black),
-          textAlign: TextAlign.start,
+        return Padding(
+          padding: EdgeInsets.all(10.0),
+          child: Text(
+            message.messageText,
+            style: TextStyle(color: Colors.black),
+            textAlign: TextAlign.start,
+          ),
         );
         break;
       case MessageType.Image:
-        return Image.file(message.imgFile);
+        return ImageMessage(message: message);
       default:
         return Text(
           message.messageText,
@@ -78,5 +82,44 @@ class MessageItem extends StatelessWidget {
           textAlign: TextAlign.start,
         );
     }
+  }
+}
+
+class ImageMessage extends StatelessWidget {
+  const ImageMessage({
+    Key key,
+    @required this.message,
+  }) : super(key: key);
+
+  final Message message;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => PreviewPage(
+              imgFile: message.imgFile,
+            ),
+          ),
+        );
+      },
+      child: Container(
+        height: MediaQuery.of(context).size.height / 3,
+        padding: EdgeInsets.all(4),
+        child: Hero(
+          tag: message.imgFile.path,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(5),
+            child: Image.file(
+              message.imgFile,
+              fit: BoxFit.cover,
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
