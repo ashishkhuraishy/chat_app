@@ -5,7 +5,6 @@ import '../models/message.dart';
 
 class MessageProvider extends ChangeNotifier {
   List<Message> _messages = <Message>[];
-  Map<String, String> _urls = {};
 
   // Returns all the messages from the instance
   List<Message> get messages => _messages;
@@ -17,9 +16,9 @@ class MessageProvider extends ChangeNotifier {
 
     if (messages.length % 2 == 0) {
       addMessage(Message(
-        messageType: MessageType.Image,
+        messageType: MessageType.Video,
         url:
-            'https://upload.wikimedia.org/wikipedia/commons/6/60/The_Organ_at_Arches_National_Park_Utah_Corrected.jpg',
+            'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
         id: 5,
       ));
     }

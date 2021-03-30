@@ -4,11 +4,14 @@ import 'dart:io';
 import 'dart:isolate';
 import 'dart:ui';
 
-import 'package:chat_app/models/video/video.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:hive/hive.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
+
+import '../models/video/video.dart';
+
+// TODO: Handle errors gracefully
 
 enum FileType { image, audio, video }
 // Constant declared to keep track of the current download info
@@ -49,7 +52,9 @@ class DownloadConfig {
     return _idWithControllerMap[taskID];
   }
 
-  void dispose() {
+  void dispose() async {
+    await FlutterDownloader.cancelAll();
+
     IsolateNameServer.removePortNameMapping(DOWNLOAD_NOTIFIER_PORT);
     _port.close();
   }
