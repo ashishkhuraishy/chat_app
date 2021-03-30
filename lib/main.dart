@@ -1,14 +1,13 @@
-import 'package:chat_app/models/video/video.dart';
-import 'package:chat_app/screens/message_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
-import 'package:provider/provider.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:provider/provider.dart';
 
 import 'config/download_config.dart';
+import 'models/video/video.dart';
 import 'providers/message_provider.dart';
-import 'screens/download_page.dart';
+import 'screens/message_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

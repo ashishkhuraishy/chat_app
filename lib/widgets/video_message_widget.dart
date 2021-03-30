@@ -73,17 +73,19 @@ class VideoWidget extends StatelessWidget {
                 image: FileImage(
                   File(video.thumbNailPath),
                 ),
+                fit: BoxFit.cover,
               ),
             ),
-            child: Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.black87,
-              ),
-              child: Center(
+            child: Center(
+              child: Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white.withOpacity(0.7),
+                ),
                 child: Icon(
                   Icons.play_arrow_rounded,
                   color: Colors.white70,
+                  size: 40,
                 ),
               ),
             ),

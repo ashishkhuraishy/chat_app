@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
@@ -39,11 +40,9 @@ class _DownloadWidgettState extends State<DownloadWidgett> {
   _onDownloadPressed() async {
     setState(() => clicked = true);
     print('Start download for ${widget.url}');
-    setState(
-      () async => _controller =
-          await Provider.of<DownloadConfig>(context, listen: false)
-              .addTask(widget.url, widget.fileType),
-    );
+    _controller = await Provider.of<DownloadConfig>(context, listen: false)
+        .addTask(widget.url, widget.fileType);
+    setState(() {});
   }
 
   @override
@@ -80,9 +79,17 @@ class DownloadProgress extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // if (_controller == null) {
+    //   return CircularProgressIndicator(
+    //     valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+    //   );
+    // }
+
     return StreamBuilder<DownloadTask>(
         stream: _controller.stream,
         builder: (context, snapshot) {
+          log(snapshot.data.toString());
+
           if (!snapshot.hasData) {
             return CircularProgressIndicator(
               valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
