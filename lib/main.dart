@@ -1,16 +1,25 @@
-import 'package:chat_app/widgets/audio_player.dart';
-import 'package:chat_app/config/download_config.dart';
-import 'package:chat_app/screens/download_page.dart';
+import 'package:chat_app/models/video/video.dart';
+import 'package:chat_app/screens/message_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:provider/provider.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
+import 'config/download_config.dart';
 import 'providers/message_provider.dart';
-import 'screens/message_page.dart';
+import 'screens/download_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
   await FlutterDownloader.initialize(debug: true);
+
+  Hive.registerAdapter<Video>(VideoAdapter());
+
+  await Hive.openBox(IMAGE_BOX);
+  await Hive.openBox(VIDEO_BOX);
+
   runApp(MyApp());
 }
 
@@ -22,9 +31,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => MessageProvider()),
         Provider<DownloadConfig>(
           create: (context) => DownloadConfig(),
-          dispose: (context, value) {
-            value.dispose();
-          },
+          dispose: (context, value) => value.dispose(),
         ),
       ],
       child: MaterialApp(
@@ -32,8 +39,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-
-        home: DownloadPage(),
+        home: MessagePage(),
       ),
     );
   }

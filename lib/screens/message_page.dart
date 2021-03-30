@@ -26,7 +26,7 @@ class MessagePage extends StatelessWidget {
                       children: value.messages
                           .map((message) => MessageWidget(
                                 message: message,
-                                ownMessage: true,
+                                ownMessage: message.id == 5,
                               ))
                           .toList(),
                     );

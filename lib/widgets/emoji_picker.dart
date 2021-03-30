@@ -6,8 +6,8 @@ class EmojiPickerWidget extends StatelessWidget {
   final ValueChanged<String> onEmojiSelected;
 
   const EmojiPickerWidget({
-    @required this.onEmojiSelected,
     Key key,
+    @required this.onEmojiSelected,
   }) : super(key: key);
 
   @override

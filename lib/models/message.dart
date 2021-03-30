@@ -9,11 +9,13 @@ class Message {
   final int id;
   final String messageText;
   final File imgFile;
+  final String url;
   final MessageType messageType;
 
   Message({
+    this.url,
     this.imgFile,
-    this.id,
+    this.id = 3,
     this.messageText,
     @required this.messageType,
   });

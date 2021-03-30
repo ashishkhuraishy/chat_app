@@ -37,7 +37,7 @@ class _DownloadPageState extends State<DownloadPage> {
             onPressed: () async {
               var _controller =
                   await Provider.of<DownloadConfig>(context, listen: false)
-                      .addTask(videoUrl, 'video');
+                      .addTask(videoUrl, FileType.video);
 
               setState(() {
                 this._controller = _controller;
