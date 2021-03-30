@@ -48,17 +48,20 @@ class _DownloadWidgettState extends State<DownloadWidgett> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.grey[200],
+      color: Colors.transparent,
       child: Center(
         child: Container(
-          padding: EdgeInsets.all(8),
+          padding: EdgeInsets.all(6),
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: Colors.white,
+            color: Colors.white.withOpacity(0.7),
           ),
           child: !clicked
               ? IconButton(
-                  icon: Icon(Icons.download_rounded),
+                  icon: Icon(
+                    Icons.cloud_download_rounded,
+                    size: 28,
+                  ),
                   onPressed: _onDownloadPressed,
                 )
               : DownloadProgress(controller: _controller),
