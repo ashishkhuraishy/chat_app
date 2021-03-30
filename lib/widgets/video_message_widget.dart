@@ -29,7 +29,7 @@ class VideoMessage extends StatelessWidget {
           builder: (context, box, widget) {
             Video val = box.get(message.url,
                 defaultValue: Video(thumbNailPath: '', filePath: ''));
-            log(val.toString());
+            // log(val.toString());
             if (val.thumbNailPath.isEmpty || val.filePath.isEmpty) {
               return DownloadWidgett(
                 url: message.url,

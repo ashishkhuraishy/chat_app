@@ -27,7 +27,7 @@ class ImageMessage extends StatelessWidget {
           valueListenable: Hive.box(IMAGE_BOX).listenable(keys: [message.url]),
           builder: (context, box, widget) {
             String val = box.get(message.url, defaultValue: '');
-            log(val);
+            // log(val);
             if (val.isEmpty) {
               return DownloadWidgett(
                 url: message.url,

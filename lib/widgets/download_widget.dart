@@ -6,6 +6,7 @@ import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:provider/provider.dart';
 
 import '../config/download_config.dart';
+import '../providers/task_info_provider.dart';
 
 class DownloadWidgett extends StatefulWidget {
   const DownloadWidgett({
@@ -25,6 +26,8 @@ class _DownloadWidgettState extends State<DownloadWidgett> {
   bool clicked = false;
   StreamController<DownloadTask> _controller;
 
+  String taskID = "";
+
   @override
   void initState() {
     super.initState();
@@ -40,9 +43,12 @@ class _DownloadWidgettState extends State<DownloadWidgett> {
   _onDownloadPressed() async {
     setState(() => clicked = true);
     print('Start download for ${widget.url}');
-    _controller = await Provider.of<DownloadConfig>(context, listen: false)
+    var taskID = await Provider.of<DownloadConfig>(context, listen: false)
         .addTask(widget.url, widget.fileType);
-    setState(() {});
+    log('Task ID $taskID');
+    setState(() {
+      this.taskID = taskID;
+    });
   }
 
   @override
@@ -64,34 +70,61 @@ class _DownloadWidgettState extends State<DownloadWidgett> {
                   ),
                   onPressed: _onDownloadPressed,
                 )
-              : DownloadProgress(controller: _controller),
+              : DownloadProgress(
+                  key: UniqueKey(),
+                  taskID: taskID,
+                ),
         ),
       ),
     );
   }
 }
 
-class DownloadProgress extends StatelessWidget {
+class DownloadProgress extends StatefulWidget {
   const DownloadProgress({
     Key key,
-    @required StreamController<DownloadTask> controller,
-  })  : _controller = controller,
-        super(key: key);
+    @required this.taskID,
+  }) : super(key: key);
 
-  final StreamController<DownloadTask> _controller;
+  final String taskID;
+
+  @override
+  _DownloadProgressState createState() => _DownloadProgressState();
+}
+
+class _DownloadProgressState extends State<DownloadProgress> {
+  TaskInfoProvider _taskInfoProvider;
+
+  @override
+  void initState() {
+    super.initState();
+    _taskInfoProvider =
+        TaskInfoProvider(context: context, taskID: widget.taskID);
+    log("Initilised with " + widget.taskID);
+
+    if (widget.taskID.isNotEmpty) _taskInfoProvider.getData();
+  }
+
+  @override
+  void dispose() {
+    _taskInfoProvider.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    // if (_controller == null) {
-    //   return CircularProgressIndicator(
-    //     valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
-    //   );
-    // }
+    if (widget.taskID == null) {
+      return CircularProgressIndicator(
+        valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+      );
+    }
 
     return StreamBuilder<DownloadTask>(
-        stream: _controller.stream,
+        stream: _taskInfoProvider.stream,
         builder: (context, snapshot) {
-          log(snapshot.data.toString());
+          // log(snapshot.data.toString());
+
+          // log(snapshot.toString());
 
           if (!snapshot.hasData) {
             return CircularProgressIndicator(

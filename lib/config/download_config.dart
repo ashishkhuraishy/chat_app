@@ -33,8 +33,7 @@ class DownloadConfig {
     _registerDownload();
   }
 
-  Future<StreamController<DownloadTask>> addTask(
-      String url, FileType fileType) async {
+  Future<String> addTask(String url, FileType fileType) async {
     var downloadDir = await _generateDownloadDir(fileType.stringify);
     if (downloadDir.isEmpty) return null;
 
@@ -47,9 +46,9 @@ class DownloadConfig {
 
     _urlWithIDMap[url] = taskID;
     _taskType[taskID] = fileType;
-    _idWithControllerMap[taskID] = StreamController<DownloadTask>();
+    // _idWithControllerMap[taskID] = StreamController<DownloadTask>();
 
-    return _idWithControllerMap[taskID];
+    return taskID;
   }
 
   void dispose() async {
@@ -72,11 +71,11 @@ class DownloadConfig {
       String id = message[0];
       DownloadTaskStatus status = message[1];
 
-      var taskInfo = await _taskProgress(id);
+      var taskInfo = await taskProgress(id);
 
-      if (status == DownloadTaskStatus.complete) _addToDB(taskInfo.url, id);
+      // if (status == DownloadTaskStatus.complete) await addToDB(taskInfo);
 
-      _idWithControllerMap[id].add(taskInfo);
+      // _idWithControllerMap[id]?.add(taskInfo);
     });
 
     FlutterDownloader.registerCallback(_downloadCallback);
@@ -123,29 +122,29 @@ class DownloadConfig {
 
   // Add to DB will take the url and find the stored path, then
   // adds those data into hive db and make it referncable on the UI
-  void _addToDB(String url, String taskID) async {
-    var task = await _taskProgress(taskID);
-
+  Future<void> addToDB(DownloadTask task) async {
     var storedPath = task.savedDir + '/' + task.filename;
     log(storedPath);
 
-    var type = _taskType[taskID];
+    var type = _taskType[task.taskId];
 
     if (type == FileType.image) {
-      Hive.box(IMAGE_BOX).put(url, storedPath);
+      Hive.box(IMAGE_BOX).put(task.url, storedPath);
     } else if (type == FileType.video) {
       var _thumbNail = await _generateThumbnail(storedPath);
 
       log(_thumbNail);
       var video = Video(filePath: storedPath, thumbNailPath: _thumbNail);
-      Hive.box(VIDEO_BOX).put(url, video);
+      Hive.box(VIDEO_BOX).put(task.url, video);
     }
 
-    _idWithControllerMap[taskID].close();
+    // _idWithControllerMap[task.taskId]?.close();
 
-    _urlWithIDMap.remove(url);
-    _idWithControllerMap.remove(taskID);
-    _taskType.remove(taskID);
+    _urlWithIDMap.remove(task.url);
+    // _idWithControllerMap.remove(task.taskId);
+    _taskType.remove(task.taskId);
+
+    log("Written to db Url : ${task.url} \t Path : $storedPath");
   }
 
   // This method will generate and store a thumbnail from a given video
@@ -161,12 +160,12 @@ class DownloadConfig {
     return thumbPath;
   }
 
-  Future<DownloadTask> _taskProgress(String taskID) async {
+  Future<DownloadTask> taskProgress(String taskID) async {
     var query = "SELECT * FROM task WHERE task_id='$taskID'";
     var tasks = await FlutterDownloader.loadTasksWithRawQuery(query: query);
 
     var task = tasks?.first;
-    log(task.toString());
+    // log(task.toString());
 
     return task;
   }

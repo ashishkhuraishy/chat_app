@@ -22,5 +22,14 @@ class MessageProvider extends ChangeNotifier {
         id: 5,
       ));
     }
+
+    if (messages.length % 7 == 0) {
+      addMessage(Message(
+        messageType: MessageType.Image,
+        url:
+            'https://upload.wikimedia.org/wikipedia/commons/6/60/The_Organ_at_Arches_National_Park_Utah_Corrected.jpg',
+        id: 5,
+      ));
+    }
   }
 }

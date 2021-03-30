@@ -35,7 +35,7 @@ class _DownloadPageState extends State<DownloadPage> {
         children: [
           ElevatedButton(
             onPressed: () async {
-              var _controller =
+              var taskID =
                   await Provider.of<DownloadConfig>(context, listen: false)
                       .addTask(videoUrl, FileType.video);
 
