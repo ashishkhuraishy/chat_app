@@ -24,7 +24,7 @@ const APP_NAME = "ChatApp";
 
 class DownloadConfig {
   final Map<String, String> _urlWithIDMap = {};
-  final Map<String, StreamController<DownloadTask>> _idWithControllerMap = {};
+  // final Map<String, StreamController<DownloadTask>> _idWithControllerMap = {};
   final Map<String, FileType> _taskType = {};
 
   final ReceivePort _port = ReceivePort();
@@ -34,6 +34,10 @@ class DownloadConfig {
   }
 
   Future<String> addTask(String url, FileType fileType) async {
+    // Check if the url is already downloading... if then return the controller
+    // stored inside the map
+    if (_urlWithIDMap[url] != null) return _urlWithIDMap[url];
+
     var downloadDir = await _generateDownloadDir(fileType.stringify);
     if (downloadDir.isEmpty) return null;
 
@@ -46,7 +50,7 @@ class DownloadConfig {
 
     _urlWithIDMap[url] = taskID;
     _taskType[taskID] = fileType;
-    // _idWithControllerMap[taskID] = StreamController<DownloadTask>();
+    // _idWithControllerMap[taskID] = streamController;
 
     return taskID;
   }
@@ -56,6 +60,10 @@ class DownloadConfig {
 
     IsolateNameServer.removePortNameMapping(DOWNLOAD_NOTIFIER_PORT);
     _port.close();
+  }
+
+  String check(String url) {
+    return _urlWithIDMap[url] ?? '';
   }
 
   // This method will initialise and create a port for main isolate
@@ -73,7 +81,7 @@ class DownloadConfig {
 
       var taskInfo = await taskProgress(id);
 
-      // if (status == DownloadTaskStatus.complete) await addToDB(taskInfo);
+      if (status == DownloadTaskStatus.complete) await addToDB(taskInfo);
 
       // _idWithControllerMap[id]?.add(taskInfo);
     });
@@ -137,8 +145,6 @@ class DownloadConfig {
       var video = Video(filePath: storedPath, thumbNailPath: _thumbNail);
       Hive.box(VIDEO_BOX).put(task.url, video);
     }
-
-    // _idWithControllerMap[task.taskId]?.close();
 
     _urlWithIDMap.remove(task.url);
     // _idWithControllerMap.remove(task.taskId);

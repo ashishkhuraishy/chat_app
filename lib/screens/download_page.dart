@@ -1,10 +1,8 @@
 import 'dart:async';
 import 'dart:developer';
 
-import 'package:chat_app/config/download_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
-import 'package:provider/provider.dart';
 
 class DownloadPage extends StatefulWidget {
   @override
@@ -24,6 +22,12 @@ class _DownloadPageState extends State<DownloadPage> {
   }
 
   @override
+  void dispose() {
+    _controller.close();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -35,13 +39,13 @@ class _DownloadPageState extends State<DownloadPage> {
         children: [
           ElevatedButton(
             onPressed: () async {
-              var taskID =
-                  await Provider.of<DownloadConfig>(context, listen: false)
-                      .addTask(videoUrl, FileType.video);
+              // var taskID =
+              //     await Provider.of<DownloadConfig>(context, listen: false)
+              //         .addTask(videoUrl, FileType.video);
 
-              setState(() {
-                this._controller = _controller;
-              });
+              // setState(() {
+              //   this._controller = _controller;
+              // });
             },
             child: Text('Download'),
           ),

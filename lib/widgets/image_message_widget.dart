@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -22,6 +21,7 @@ class ImageMessage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: MediaQuery.of(context).size.height / 3,
+      width: MediaQuery.of(context).size.width / 1.3,
       padding: EdgeInsets.all(4),
       child: ValueListenableBuilder<Box>(
           valueListenable: Hive.box(IMAGE_BOX).listenable(keys: [message.url]),
