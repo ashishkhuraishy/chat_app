@@ -15,6 +15,11 @@ class MessageProvider extends ChangeNotifier {
 
   List<Message> _mockMessages = [
     Message(
+      messageType: MessageType.Audio,
+      url: 'https://luan.xyz/files/audio/ambient_c_motion.mp3',
+      id: 5,
+    ),
+    Message(
       messageType: MessageType.Video,
       url:
           'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',

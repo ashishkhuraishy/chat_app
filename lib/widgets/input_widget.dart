@@ -102,6 +102,8 @@ class _InputWidgetState extends State<InputWidget> {
               ),
               SendButton(
                 onSubmit: _onSubmit,
+                hasText: !_isEmpty,
+                onRecording: (value) {},
               ),
             ],
           ),

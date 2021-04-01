@@ -18,6 +18,7 @@ enum FileType { image, audio, video }
 const DOWNLOAD_NOTIFIER_PORT = 'DOWNLOAD_NOTIFIER_PORT';
 const IMAGE_BOX = 'IMAGE_BOX';
 const VIDEO_BOX = 'VIDEO_BOX';
+const AUDIO_BOX = 'AUDIO_BOX';
 
 // TODO: change app name
 const APP_NAME = "ChatApp";
@@ -144,6 +145,8 @@ class DownloadConfig {
       log(_thumbNail);
       var video = Video(filePath: storedPath, thumbNailPath: _thumbNail);
       Hive.box(VIDEO_BOX).put(task.url, video);
+    } else if (type == FileType.audio) {
+      Hive.box(AUDIO_BOX).put(task.url, storedPath);
     }
 
     _urlWithIDMap.remove(task.url);

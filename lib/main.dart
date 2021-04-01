@@ -18,6 +18,7 @@ void main() async {
 
   await Hive.openBox(IMAGE_BOX);
   await Hive.openBox(VIDEO_BOX);
+  await Hive.openBox(AUDIO_BOX);
 
   runApp(MyApp());
 }

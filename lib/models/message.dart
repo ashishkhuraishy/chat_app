@@ -11,12 +11,14 @@ class Message {
   final File imgFile;
   final String url;
   final MessageType messageType;
+  final String path;
 
   Message({
     this.url,
     this.imgFile,
     this.id = 3,
     this.messageText,
+    this.path,
     @required this.messageType,
   });
 
@@ -33,6 +35,13 @@ class Message {
     return Message(
       messageType: MessageType.Image,
       imgFile: _file,
+    );
+  }
+
+  factory Message.audioMessage(String path) {
+    return Message(
+      messageType: MessageType.Audio,
+      path: path,
     );
   }
 }
