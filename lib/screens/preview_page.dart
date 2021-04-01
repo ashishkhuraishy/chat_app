@@ -1,11 +1,12 @@
 import 'dart:io';
 
-import 'package:chat_app/config/download_config.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:video_player/video_player.dart';
+
+import '../config/download_config.dart';
 
 class PreviewPage extends StatelessWidget {
   final File mediaFile;

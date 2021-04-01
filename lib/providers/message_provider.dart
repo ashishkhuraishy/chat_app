@@ -1,9 +1,9 @@
 import 'dart:math';
 
-import 'package:chat_app/widgets/message_widget.dart';
 import 'package:flutter/cupertino.dart';
 
 import '../models/message.dart';
+import '../widgets/message_widget.dart';
 
 class MessageProvider extends ChangeNotifier {
   List<Message> _messages = <Message>[];

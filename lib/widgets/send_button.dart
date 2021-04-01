@@ -1,8 +1,9 @@
-import 'package:chat_app/config/audio_recorder.dart';
-import 'package:chat_app/models/message.dart';
-import 'package:chat_app/providers/message_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import '../config/audio_recorder.dart';
+import '../models/message.dart';
+import '../providers/message_provider.dart';
 
 class SendButton extends StatelessWidget {
   SendButton({

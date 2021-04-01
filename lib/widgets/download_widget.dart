@@ -60,6 +60,66 @@ class DownloadWidgett extends StatelessWidget {
   }
 }
 
+class DownloadableAudioPlayer extends StatelessWidget {
+  final String url;
+
+  const DownloadableAudioPlayer({
+    Key key,
+    @required this.url,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => DownloadBloc(
+        url: url,
+        fileType: FileType.audio,
+        downloadConfig: Provider.of<DownloadConfig>(
+          context,
+          listen: false,
+        ),
+      ),
+      child: Row(
+        children: [
+          BlocBuilder<DownloadBloc, DownloadState>(
+            builder: (context, state) {
+              if (state is DownloadInitial) {
+                return IconButton(
+                  icon: Icon(
+                    Icons.download_rounded,
+                  ),
+                  onPressed: () => BlocProvider.of<DownloadBloc>(context).add(
+                    DownloadStart(
+                      url: url,
+                      fileType: FileType.audio,
+                    ),
+                  ),
+                );
+              } else if (state is DownloadProgressState) {
+                return CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.green[200]),
+                  value: state.progress,
+                );
+              }
+
+              return CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.green[200]),
+              );
+            },
+          ),
+          Expanded(
+            child: Slider(
+              value: 0,
+              onChanged: (val) {},
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
 // class DownloadProgress extends StatefulWidget {
 //   const DownloadProgress({
 //     Key key,

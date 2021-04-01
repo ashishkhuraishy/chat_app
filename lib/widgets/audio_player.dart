@@ -2,10 +2,42 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:audioplayers/audioplayers.dart';
-import 'package:chat_app/models/message.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
-// TODOD: extract audio player
+import '../config/download_config.dart';
+import '../models/message.dart';
+import 'download_widget.dart';
+
+class AudioMessage extends StatelessWidget {
+  final Message message;
+
+  const AudioMessage({
+    Key key,
+    @required this.message,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder<Box>(
+        valueListenable: Hive.box(AUDIO_BOX).listenable(keys: [
+          message.url,
+        ]),
+        builder: (context, box, widget) {
+          String path = box.get(message.url, defaultValue: '');
+          if (path.isEmpty) {
+            return DownloadableAudioPlayer(url: message.url);
+          }
+
+          return AudioPlayerUI(
+            path: path,
+          );
+        });
+  }
+}
+
+// TODO: extract audio player
 class AudioPlayerUI extends StatefulWidget {
   final String path;
 
