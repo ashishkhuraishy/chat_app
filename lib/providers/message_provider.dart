@@ -28,8 +28,6 @@ class MessageProvider extends ChangeNotifier {
     _selectedMessage = message;
     _selectedIndex = index;
 
-    log(_selectedMessage.toString());
-
     notifyListeners();
   }
 
@@ -43,7 +41,6 @@ class MessageProvider extends ChangeNotifier {
   onReply({Message message}) {
     _replyMessage = message ?? _selectedMessage;
 
-    log(_selectedMessage.toString());
     cancelSelected();
   }
 
@@ -59,6 +56,8 @@ class MessageProvider extends ChangeNotifier {
 
   // this method will add a new message to the top of the list
   addMessage(Message message) {
+    message.replyText = replyMessage?.messageText ?? '';
+
     _messages.insert(0, message);
 
     cancelReply();

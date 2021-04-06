@@ -12,6 +12,8 @@ class Message {
   final String url;
   final MessageType messageType;
   final String path;
+  bool _hasReply;
+  String _replyText;
 
   Message({
     this.url,
@@ -43,6 +45,16 @@ class Message {
       messageType: MessageType.Audio,
       path: path,
     );
+  }
+
+  String get replyText => _replyText ?? '';
+  bool get hasReply => _hasReply ?? false;
+
+  set replyText(String reply) {
+    if (reply.isEmpty) return;
+
+    this._replyText = reply;
+    this._hasReply = true;
   }
 
   @override

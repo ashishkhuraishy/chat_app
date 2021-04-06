@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 
 import '../models/message.dart';
+import 'input_widget.dart';
 import 'audio_player.dart';
 import 'image_message_widget.dart';
 import 'video_message_widget.dart';
@@ -12,10 +13,12 @@ enum MessageType { Text, Audio, Video, Image }
 class MessageWidget extends StatelessWidget {
   final Message message;
   final bool ownMessage;
+  final bool isHighlighted;
 
   const MessageWidget({
     @required this.message,
     @required this.ownMessage,
+    this.isHighlighted = false,
   });
 
   @override
@@ -26,7 +29,7 @@ class MessageWidget extends StatelessWidget {
     final alignment =
         ownMessage ? MainAxisAlignment.end : MainAxisAlignment.start;
     final decoration = BoxDecoration(
-      color: ownMessage ? Colors.grey[200] : Colors.green[200],
+      color: ownMessage ? Colors.blue[100] : Colors.green[200],
       borderRadius: borderRadius.subtract(
         BorderRadius.only(
           bottomRight: ownMessage ? radius : Radius.zero,
@@ -35,23 +38,37 @@ class MessageWidget extends StatelessWidget {
       ),
     );
 
-    return Row(
-      mainAxisAlignment: alignment,
-      children: [
-        ConstrainedBox(
-          constraints: BoxConstraints(
-            maxWidth: MediaQuery.of(context).size.width / 1.3,
-          ),
-          child: Container(
-            padding: EdgeInsets.all(2),
-            margin: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-            decoration: decoration,
-            child: MessageItem(
-              message: message,
+    return Container(
+      color: isHighlighted ? Colors.green[100] : null,
+      child: Row(
+        mainAxisAlignment: alignment,
+        children: [
+          ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: MediaQuery.of(context).size.width / 1.3,
+            ),
+            child: Container(
+              padding: EdgeInsets.all(2),
+              margin: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+              decoration: decoration,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Visibility(
+                    child: ReplyWidget(
+                      text: message.replyText,
+                    ),
+                    visible: message.hasReply,
+                  ),
+                  MessageItem(
+                    message: message,
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

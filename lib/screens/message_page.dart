@@ -40,6 +40,7 @@ class MessagePage extends StatelessWidget {
                           child: MessageWidget(
                             message: value.messages[index],
                             ownMessage: index % 2 == 0,
+                            isHighlighted: value.selectedIndex == index,
                           ),
                         );
                       },
