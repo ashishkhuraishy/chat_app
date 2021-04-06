@@ -1,3 +1,5 @@
+import 'package:chat_app/models/message.dart';
+import 'package:chat_app/widgets/chat_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -10,8 +12,8 @@ class MessagePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(
-          title: Text("User 1"),
+        appBar: ChatAppBar(
+          provider: Provider.of<MessageProvider>(context, listen: false),
         ),
         body: WillPopScope(
           onWillPop: () => _onBackPress(context),
@@ -20,22 +22,39 @@ class MessagePage extends StatelessWidget {
               Expanded(
                 child: Consumer<MessageProvider>(
                   builder: (context, value, child) {
-                    return ListView(
+                    return ListView.builder(
                       reverse: true,
                       physics: BouncingScrollPhysics(),
-                      children: value.messages
-                          .map((message) => MessageWidget(
-                                message: message,
-                                ownMessage: message.id != 5,
-                              ))
-                          .toList(),
+                      itemCount: value.messages.length,
+                      itemBuilder: (context, index) {
+                        return GestureDetector(
+                          onLongPress: () {
+                            Provider.of<MessageProvider>(context, listen: false)
+                                .selectMessage(value.messages[index], index);
+                          },
+                          onHorizontalDragEnd: (details) {
+                            // TODO: set this message as reply message
+                            Provider.of<MessageProvider>(context, listen: false)
+                                .onReply(message: value.messages[index]);
+                          },
+                          child: MessageWidget(
+                            message: value.messages[index],
+                            ownMessage: index % 2 == 0,
+                          ),
+                        );
+                      },
                     );
                   },
                 ),
               ),
               ChangeNotifierProvider(
                 create: (_) => _isEmojiVisible,
-                child: InputWidget(),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    InputWidget(),
+                  ],
+                ),
               ),
             ],
           ),
@@ -43,12 +62,21 @@ class MessagePage extends StatelessWidget {
       );
 
   Future<bool> _onBackPress(BuildContext context) {
+    var messageProvider = Provider.of<MessageProvider>(
+      context,
+      listen: false,
+    );
+
     if (_isEmojiVisible.value) {
       // toggleEmojiKeyboard();
       _isEmojiVisible.value = false;
       return Future.value(false);
+    } else if (messageProvider.isSelected) {
+      messageProvider.cancelSelected();
+
+      return Future.value(false);
     }
-    Navigator.pop(context);
+
     return Future.value(true);
   }
 }

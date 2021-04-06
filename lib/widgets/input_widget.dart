@@ -76,23 +76,42 @@ class _InputWidgetState extends State<InputWidget> {
                       width: 0.2,
                     ),
                   ),
-                  child: Row(
-                    children: <Widget>[
-                      EmojiTextSwitch(
-                        focusNode: _focusNode,
-                        // onClick: _onEmojiClick,
+                  child: Column(
+                    children: [
+                      Consumer<MessageProvider>(
+                          builder: (context, notifier, widget) {
+                        return Visibility(
+                          child: GestureDetector(
+                            onDoubleTap: () => Provider.of<MessageProvider>(
+                              context,
+                              listen: false,
+                            ).cancelReply(),
+                            child: ReplyWidget(
+                              text: notifier.replyMessage?.messageText,
+                            ),
+                          ),
+                          visible: notifier.hasreply,
+                        );
+                      }),
+                      Row(
+                        children: <Widget>[
+                          EmojiTextSwitch(
+                            focusNode: _focusNode,
+                            // onClick: _onEmojiClick,
+                          ),
+                          Expanded(
+                            child: MessageTextField(
+                              focusNode: _focusNode,
+                              controller: _controller,
+                              onChanged: _onValueChange,
+                            ),
+                          ),
+                          Visibility(
+                            child: FileInputWidget(),
+                            visible: _isEmpty,
+                          )
+                        ],
                       ),
-                      Expanded(
-                        child: MessageTextField(
-                          focusNode: _focusNode,
-                          controller: _controller,
-                          onChanged: _onValueChange,
-                        ),
-                      ),
-                      Visibility(
-                        child: FileInputWidget(),
-                        visible: _isEmpty,
-                      )
                     ],
                   ),
                 ),
@@ -113,6 +132,44 @@ class _InputWidgetState extends State<InputWidget> {
         ),
       ],
     );
+  }
+}
+
+class ReplyWidget extends StatelessWidget {
+  const ReplyWidget({
+    Key key,
+    @required this.text,
+  }) : super(key: key);
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.all(4),
+      margin: EdgeInsets.symmetric(
+        horizontal: 4,
+        vertical: 8,
+      ),
+      decoration: BoxDecoration(
+        color: Colors.grey[200],
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(12),
+          topRight: Radius.circular(12),
+        ),
+      ),
+      child: Text(
+        text ?? '',
+      ),
+    );
+  }
+}
+
+class InputArea extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container();
   }
 }
 

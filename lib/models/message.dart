@@ -44,4 +44,14 @@ class Message {
       path: path,
     );
   }
+
+  @override
+  String toString() {
+    return '''
+    Message
+      ${this.messageText}
+
+      ${this.messageType}
+  ''';
+  }
 }
